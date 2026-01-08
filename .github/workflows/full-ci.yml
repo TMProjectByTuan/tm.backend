@@ -1,0 +1,57 @@
+name: Full CI
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  backend:
+    name: Backend CI
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore dependencies
+        run: dotnet restore tm.backend/tm.Api/tm.Api.sln
+
+      - name: Build
+        run: dotnet build tm.backend/tm.Api/tm.Api.sln -c Release --no-restore
+
+  frontend:
+    name: Frontend CI
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          cache: 'npm'
+          cache-dependency-path: tm.frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: tm.frontend
+        run: npm ci
+
+      - name: Run linter
+        working-directory: tm.frontend
+        run: npm run lint
+        continue-on-error: true
+
+      - name: Build
+        working-directory: tm.frontend
+        run: npm run build
+

@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    container_name: tm-sqlserver
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=Your_strong_password123!
+      - MSSQL_PID=Developer
+    ports:
+      - "1433:1433"
+    volumes:
+      - tm_sql_data:/var/opt/mssql
+    networks:
+      - tm-network
+
+  api:
+    build:
+      context: .
+      dockerfile: tm.backend/tm.Api/Dockerfile
+    container_name: tm-api
+    depends_on:
+      - sqlserver
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Server=sqlserver,1433;Database=TMProjectDb;User=sa;Password=Your_strong_password123!;TrustServerCertificate=True;MultipleActiveResultSets=true
+    ports:
+      - "8080:8080"
+    networks:
+      - tm-network
+
+volumes:
+  tm_sql_data:
+
+networks:
+  tm-network:
+    driver: bridge
+
+

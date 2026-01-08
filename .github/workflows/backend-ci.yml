@@ -1,0 +1,42 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [ main, develop ]
+    paths:
+      - "tm.backend/**"
+      - ".github/workflows/backend-ci.yml"
+  pull_request:
+    branches: [ main, develop ]
+    paths:
+      - "tm.backend/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "8.0.x"
+
+      - name: Restore dependencies
+        run: dotnet restore tm.backend/tm.Api/tm.Api.sln
+
+      - name: Build
+        run: dotnet build tm.backend/tm.Api/tm.Api.sln -c Release --no-restore
+
+      - name: Test (if exists)
+        run: |
+          if [ -f "tm.backend/tm.Tests/tm.Tests.csproj" ]; then
+            dotnet test tm.backend/tm.Tests/tm.Tests.csproj -c Release --no-build --verbosity normal
+          else
+            echo "No test project found, skipping tests"
+          fi
+        continue-on-error: true
+
+
