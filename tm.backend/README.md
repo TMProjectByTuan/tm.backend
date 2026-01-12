@@ -1,5 +1,7 @@
 # TM Backend - Hướng dẫn phát triển
 
+> **Test CI/CD - Last updated: 2026-01-12**
+
 ## 📋 Mục lục
 
 - [Cấu trúc Project](#cấu-trúc-project)
