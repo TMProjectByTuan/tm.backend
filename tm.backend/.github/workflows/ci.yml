@@ -21,10 +21,10 @@ jobs:
           dotnet-version: "8.0.x"
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore tm.Api/tm.Api.sln
 
       - name: Build
-        run: dotnet build -c Release --no-restore
+        run: dotnet build tm.Api/tm.Api.sln -c Release --no-restore
 
       - name: Test (if exists)
         run: |
